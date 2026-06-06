@@ -1,8 +1,11 @@
 'use client';
 
+import '@/app/i18n/config';
 import React, { useState, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import FormPanel from './components/FormPanel';
 import OutputPanel from './components/OutputPanel';
+import LanguageSwitcher from './components/LanguageSwitcher';
 import { generatePDF } from '@/lib/pdf';
 import { generateLetterViaProxy } from '@/lib/api';
 import { buildSystemPrompt, buildUserPrompt } from '@/lib/prompt';
@@ -23,10 +26,12 @@ interface GenerationData {
   model: string;
   apiKey: string;
   baseUrl: string;
+  letterLanguage: string;
   variationInstructions?: string;
 }
 
 export default function Home() {
+  const { t } = useTranslation();
   const [letter, setLetter] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [companyName, setCompanyName] = useState('');
@@ -71,7 +76,7 @@ export default function Home() {
 
   const handleGenerate = useCallback(async (data: GenerationData) => {
     if (cooldown > 0) {
-      showToast(`Please wait ${cooldown}s before trying again`, 'err');
+      showToast(t('toast.waitCooldown', { seconds: cooldown }), 'err');
       return;
     }
 
@@ -84,11 +89,12 @@ export default function Home() {
     }
 
     try {
-      const systemPrompt = buildSystemPrompt(data.style, data.tone);
+      const systemPrompt = buildSystemPrompt(data.style, data.tone, data.letterLanguage);
       const userPrompt = buildUserPrompt(
         data.jobDescription,
         data.cvText,
         data.additionalContext,
+        data.letterLanguage,
         data.variationInstructions,
         data.variationInstructions ? previousLetter || letter : undefined
       );
@@ -99,14 +105,14 @@ export default function Home() {
       ]);
 
       if (!generated) {
-        throw new Error('No response from API');
+        throw new Error(t('toast.noResponse'));
       }
 
       setLetter(generated);
       setShowVariation(true);
-      showToast('Cover letter generated');
+      showToast(t('toast.generated'));
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to generate letter';
+      const message = error instanceof Error ? error.message : t('toast.noResponse');
       showToast(message, 'err');
       
       // Start cooldown on rate limit errors
@@ -116,23 +122,23 @@ export default function Home() {
     } finally {
       setIsGenerating(false);
     }
-  }, [letter, previousLetter, showToast, cooldown, startCooldown]);
+  }, [letter, previousLetter, showToast, cooldown, startCooldown, t]);
 
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(letter).then(() => {
-      showToast('Copied to clipboard');
+      showToast(t('toast.copied'));
     });
-  }, [letter, showToast]);
+  }, [letter, showToast, t]);
 
   const handleDownload = useCallback(async () => {
     try {
       await generatePDF(letter, companyName, personalInfo);
-      showToast('PDF downloaded');
+      showToast(t('toast.pdfDownloaded'));
     } catch (error) {
       console.error('PDF generation error:', error);
-      showToast('Failed to generate PDF', 'err');
+      showToast(t('toast.pdfFailed'), 'err');
     }
-  }, [letter, companyName, personalInfo, showToast]);
+  }, [letter, companyName, personalInfo, showToast, t]);
 
   const handleRegenerate = useCallback(() => {
     setShowVariation(true);
@@ -147,9 +153,9 @@ export default function Home() {
     <main className="min-h-screen bg-bg text-text font-inter">
       <nav className="flex justify-between items-center px-[6%] py-5 border-b border-border sticky top-0 bg-bg z-[100]">
         <a href="/" className="font-semibold text-[1.1rem] text-text no-underline tracking-tight">
-          Unmotivational Letters
+          {t('nav.title')}
         </a>
-        <span className="text-[0.9rem] text-text-muted">by Clara Sousa</span>
+        <LanguageSwitcher />
       </nav>
 
       <div className="max-w-[1200px] mx-auto px-[6%] py-8 grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[calc(100vh-70px)]">
