@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Upload, X, ChevronDown, ChevronUp, Lock, Eye, EyeOff, Info } from 'lucide-react';
 import { extractTextFromFile } from '@/lib/extract';
 import { saveToStorage, loadFromStorage, clearStorage } from '@/lib/crypto';
@@ -22,6 +23,7 @@ interface FormPanelProps {
     model: string;
     apiKey: string;
     baseUrl: string;
+    letterLanguage: string;
     variationInstructions?: string;
   }) => void;
   isGenerating: boolean;
@@ -38,7 +40,17 @@ const STORAGE_KEYS = {
   PERSONAL_INFO: 'ul_personal_info',
 };
 
+const LETTER_LANGUAGES = [
+  { code: 'pt', label: 'Português' },
+  { code: 'en', label: 'English' },
+  { code: 'de', label: 'Deutsch' },
+  { code: 'da', label: 'Dansk' },
+  { code: 'es', label: 'Español' },
+  { code: 'it', label: 'Italiano' },
+];
+
 export default function FormPanel({ onGenerate, isGenerating, showVariation, cooldown }: FormPanelProps) {
+  const { t, i18n } = useTranslation();
   const [personalInfo, setPersonalInfo] = useState({
     name: '',
     address: '',
@@ -51,6 +63,7 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
   const [additionalContext, setAdditionalContext] = useState('');
   const [style, setStyle] = useState('balanced');
   const [tone, setTone] = useState('confident');
+  const [letterLanguage, setLetterLanguage] = useState(i18n.language);
   const [apiKey, setApiKey] = useState('');
   const [baseUrl, setBaseUrl] = useState('https://api.openai.com/v1');
   const [showApiSettings, setShowApiSettings] = useState(false);
@@ -60,6 +73,11 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
   const [showCvPreview, setShowCvPreview] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const variationRef = React.useRef<HTMLDivElement>(null);
+
+  // Sync letter language with UI language when it changes
+  useEffect(() => {
+    setLetterLanguage(i18n.language);
+  }, [i18n.language]);
 
   // Load saved data
   useEffect(() => {
@@ -72,7 +90,7 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
     if (savedBaseUrl) setBaseUrl(savedBaseUrl);
     if (savedCv) {
       setCvText(savedCv);
-      setFileName('Previously uploaded CV');
+      setFileName(t('form.uploadHint'));
     }
     if (savedPersonal) {
       try {
@@ -81,7 +99,7 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
         // ignore
       }
     }
-  }, []);
+  }, [t]);
 
   // Save data when changed
   useEffect(() => {
@@ -105,7 +123,7 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
       setCvText(text);
       saveToStorage(STORAGE_KEYS.CV_TEXT, text);
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Error processing file');
+      alert(error instanceof Error ? error.message : t('validation.fileError'));
       setFileName('');
     }
   };
@@ -128,15 +146,15 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
     e.preventDefault();
 
     if (!jobDescription.trim()) {
-      alert('Please enter a job description');
+      alert(t('validation.jobDescriptionRequired'));
       return;
     }
     if (!companyName.trim()) {
-      alert('Please enter the company name');
+      alert(t('validation.companyNameRequired'));
       return;
     }
     if (!cvText.trim()) {
-      alert('Please enter your CV or upload a file');
+      alert(t('validation.cvRequired'));
       return;
     }
 
@@ -151,48 +169,51 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
       model: HARD_CODED_MODEL,
       apiKey,
       baseUrl,
+      letterLanguage,
       variationInstructions: showVariation ? variationInstructions : undefined,
     });
   };
+
+  const requiredStar = <span className="text-error ml-0.5">{t('form.required')}</span>;
 
   return (
     <div className="panel">
       <div className="flex items-center gap-2 mb-5 pb-4 border-b border-border">
         <div>
-          <div className="text-[0.95rem] font-medium">Your Information</div>
-          <div className="text-[0.8rem] text-text-muted mt-0.5">Fill in the details below</div>
+          <div className="text-[0.95rem] font-medium">{t('form.yourInformation')}</div>
+          <div className="text-[0.8rem] text-text-muted mt-0.5">{t('form.fillDetails')}</div>
         </div>
       </div>
 
       <form onSubmit={handleSubmit}>
         {/* Personal Details */}
         <div className="mb-5">
-          <label className="block text-[0.85rem] font-medium mb-2">Personal Details</label>
+          <label className="block text-[0.85rem] font-medium mb-2">{t('form.personalDetails')}</label>
           <div className="grid grid-cols-2 gap-3">
             <input
               type="text"
-              placeholder="Full Name"
+              placeholder={t('form.fullName')}
               className="form-input"
               value={personalInfo.name}
               onChange={(e) => setPersonalInfo({ ...personalInfo, name: e.target.value })}
             />
             <input
               type="text"
-              placeholder="Email"
+              placeholder={t('form.email')}
               className="form-input"
               value={personalInfo.email}
               onChange={(e) => setPersonalInfo({ ...personalInfo, email: e.target.value })}
             />
             <input
               type="text"
-              placeholder="Phone"
+              placeholder={t('form.phone')}
               className="form-input"
               value={personalInfo.phone}
               onChange={(e) => setPersonalInfo({ ...personalInfo, phone: e.target.value })}
             />
             <input
               type="text"
-              placeholder="Address"
+              placeholder={t('form.address')}
               className="form-input"
               value={personalInfo.address}
               onChange={(e) => setPersonalInfo({ ...personalInfo, address: e.target.value })}
@@ -203,38 +224,38 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
         {/* Company Name */}
         <div className="mb-5">
           <label className="block text-[0.85rem] font-medium mb-2">
-            Company Name <span className="text-error ml-0.5">*</span>
+            {t('form.companyName')} {requiredStar}
           </label>
           <input
             type="text"
             className="form-input"
-            placeholder="e.g., Acme Corp"
+            placeholder={t('form.companyPlaceholder')}
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
           />
-          <p className="text-[0.75rem] text-text-muted mt-2">Used for the PDF filename</p>
+          <p className="text-[0.75rem] text-text-muted mt-2">{t('form.companyFilename')}</p>
         </div>
 
         {/* Job Description */}
         <div className="mb-5">
           <label className="block text-[0.85rem] font-medium mb-2">
-            Job Description <span className="text-error ml-0.5">*</span>
+            {t('form.jobDescription')} {requiredStar}
           </label>
           <textarea
             className="form-input min-h-[140px] leading-relaxed"
-            placeholder="Paste the full job description here..."
+            placeholder={t('form.jobPlaceholder')}
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
           />
           <div className="text-right text-[0.7rem] text-text-muted mt-1">
-            {jobDescription.length} chars
+            {t('form.chars', { count: jobDescription.length })}
           </div>
         </div>
 
         {/* CV Upload */}
         <div className="mb-5">
           <label className="block text-[0.85rem] font-medium mb-2">
-            Your CV / Resume <span className="text-error ml-0.5">*</span>
+            {t('form.cvUpload')} {requiredStar}
           </label>
           <div
             className={`border border-dashed border-border rounded-md p-6 text-center cursor-pointer transition-colors duration-200 bg-bg hover:border-text-muted ${dropActive ? 'border-text bg-surface-hover' : ''}`}
@@ -258,9 +279,9 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
               <>
                 <div className="text-[0.85rem] text-text-muted flex items-center justify-center gap-2">
                   <Upload size={16} />
-                  Click to upload or drag & drop
+                  {t('form.uploadHint')}
                 </div>
-                <div className="text-[0.75rem] text-[#555] mt-1">PDF, DOCX, TXT (max 5MB)</div>
+                <div className="text-[0.75rem] text-[#555] mt-1">{t('form.uploadFormats')}</div>
               </>
             )}
             <input
@@ -271,15 +292,15 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
               onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
             />
           </div>
-          <div className="text-center text-[0.75rem] text-text-muted my-2">or paste below</div>
+          <div className="text-center text-[0.75rem] text-text-muted my-2">{t('form.orPaste')}</div>
           <textarea
             className="form-input min-h-[140px] leading-relaxed"
-            placeholder="Paste your CV content here..."
+            placeholder={t('form.cvPlaceholder')}
             value={cvText}
             onChange={(e) => setCvText(e.target.value)}
           />
           <div className="text-right text-[0.7rem] text-text-muted mt-1">
-            {cvText.length} chars
+            {t('form.chars', { count: cvText.length })}
           </div>
 
           {/* CV Preview */}
@@ -291,7 +312,7 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
                 className="flex items-center gap-2 text-[0.8rem] text-text-muted hover:text-text transition-colors mb-2"
               >
                 {showCvPreview ? <EyeOff size={14} /> : <Eye size={14} />}
-                {showCvPreview ? 'Hide extracted preview' : 'Show extracted preview'}
+                {showCvPreview ? t('form.hidePreview') : t('form.showPreview')}
               </button>
               {showCvPreview && (
                 <div className="bg-bg border border-border rounded-md p-4 text-[0.8rem] text-text-muted leading-relaxed whitespace-pre-wrap max-h-[240px] overflow-y-auto scrollbar-thin">
@@ -305,22 +326,22 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
         {/* Additional Context */}
         <div className="mb-5">
           <label className="block text-[0.85rem] font-medium mb-2">
-            Additional Context <span className="font-normal text-text-muted">(optional)</span>
+            {t('form.additionalContext')} <span className="font-normal text-text-muted">({t('form.optional')})</span>
           </label>
           <textarea
             className="form-input min-h-[80px] leading-relaxed"
-            placeholder="Anything else the AI should know?"
+            placeholder={t('form.additionalPlaceholder')}
             value={additionalContext}
             onChange={(e) => setAdditionalContext(e.target.value)}
           />
           <div className="text-right text-[0.7rem] text-text-muted mt-1">
-            {additionalContext.length} chars
+            {t('form.chars', { count: additionalContext.length })}
           </div>
         </div>
 
         {/* Style */}
         <div className="mb-5">
-          <label className="block text-[0.85rem] font-medium mb-2">Writing Style</label>
+          <label className="block text-[0.85rem] font-medium mb-2">{t('form.writingStyle')}</label>
           <div className="grid grid-cols-3 gap-2">
             {['formal', 'balanced', 'creative'].map((s) => (
               <div key={s} className="relative">
@@ -337,7 +358,7 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
                   htmlFor={`style-${s}`}
                   className={`block py-2 px-3 bg-bg border border-border rounded-md text-center text-[0.8rem] cursor-pointer transition-all duration-200 ${style === s ? 'border-text text-text bg-surface-hover' : 'text-text-muted'}`}
                 >
-                  {s.charAt(0).toUpperCase() + s.slice(1)}
+                  {t(`form.style_${s}`)}
                 </label>
               </div>
             ))}
@@ -346,16 +367,32 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
 
         {/* Tone */}
         <div className="mb-5">
-          <label className="block text-[0.85rem] font-medium mb-2">Tone</label>
+          <label className="block text-[0.85rem] font-medium mb-2">{t('form.tone')}</label>
           <select
             className="form-input"
             value={tone}
             onChange={(e) => setTone(e.target.value)}
           >
-            <option value="enthusiastic">Enthusiastic</option>
-            <option value="confident">Confident</option>
-            <option value="humble">Humble</option>
-            <option value="assertive">Assertive</option>
+            <option value="enthusiastic">{t('form.tone_enthusiastic')}</option>
+            <option value="confident">{t('form.tone_confident')}</option>
+            <option value="humble">{t('form.tone_humble')}</option>
+            <option value="assertive">{t('form.tone_assertive')}</option>
+          </select>
+        </div>
+
+        {/* Letter Language */}
+        <div className="mb-5">
+          <label className="block text-[0.85rem] font-medium mb-2">{t('form.letterLanguage')}</label>
+          <select
+            className="form-input"
+            value={letterLanguage}
+            onChange={(e) => setLetterLanguage(e.target.value)}
+          >
+            {LETTER_LANGUAGES.map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.label}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -363,12 +400,12 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
         {showVariation && (
           <div className="mb-5" ref={variationRef}>
             <label className="block text-[0.85rem] font-medium mb-2">
-              Variation Instructions
+              {t('form.variationInstructions')}
             </label>
             <textarea
               id="variation-instructions"
               className="form-input min-h-[60px] leading-relaxed"
-              placeholder="What would you like to change in this version? e.g., 'Make it more technical' or 'Emphasize leadership skills'"
+              placeholder={t('form.variationPlaceholder')}
               value={variationInstructions}
               onChange={(e) => setVariationInstructions(e.target.value)}
             />
@@ -384,23 +421,23 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
               className="flex items-center gap-2 text-[0.85rem] text-text-muted hover:text-text transition-colors"
             >
               <Lock size={14} />
-              API Settings
+              {t('form.apiSettings')}
               {showApiSettings ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             </button>
 
             <div className="relative group">
-              <Info size={14} className="text-text-muted hover:text-text transition-colors" />
+              <Info size={14} className="text-text-muted hover:text-text transition-colors cursor-help" />
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-[260px] p-3 bg-surface border border-border rounded-md text-[0.75rem] text-text-muted leading-relaxed opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 shadow-lg">
-                <p className="font-medium text-text mb-1">Where to get your credentials</p>
+                <p className="font-medium text-text mb-1">{t('form.tooltipTitle')}</p>
                 <p className="mb-2">
-                  <span className="text-text">Base URL:</span> Your AI provider&apos;s API endpoint.
+                  <span className="text-text">{t('form.tooltipBaseUrl')}:</span> {t('form.tooltipProviderEndpoint')}
                 </p>
                 <ul className="list-disc pl-4 mb-2 space-y-0.5">
                   <li>OpenAI: <span className="font-mono text-[0.7rem]">https://api.openai.com/v1</span></li>
                   <li>OpenRouter: <span className="font-mono text-[0.7rem]">https://openrouter.ai/api/v1</span></li>
                 </ul>
                 <p>
-                  <span className="text-text">API Key:</span> Create one in your provider&apos;s dashboard.
+                  <span className="text-text">{t('form.tooltipApiKey')}:</span> {t('form.tooltipCreateKey')}
                 </p>
                 <ul className="list-disc pl-4 space-y-0.5">
                   <li>OpenAI: <span className="font-mono text-[0.7rem]">platform.openai.com/api-keys</span></li>
@@ -413,18 +450,18 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
           {showApiSettings && (
             <div className="mt-3 space-y-3">
               <div>
-                <label className="block text-[0.8rem] font-medium mb-1.5">Base URL</label>
+                <label className="block text-[0.8rem] font-medium mb-1.5">{t('form.baseUrl')}</label>
                 <input
                   type="text"
                   className="form-input"
                   value={baseUrl}
                   onChange={(e) => setBaseUrl(e.target.value)}
-                  placeholder="https://api.openai.com/v1"
+                  placeholder={t('form.baseUrlPlaceholder')}
                 />
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-[0.8rem] font-medium">API Key</label>
+                  <label className="text-[0.8rem] font-medium">{t('form.apiKey')}</label>
                   <button
                     type="button"
                     onClick={() => {
@@ -435,7 +472,7 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
                     }}
                     className="text-[0.7rem] text-text-muted hover:text-error transition-colors"
                   >
-                    Clear saved credentials
+                    {t('form.clearCredentials')}
                   </button>
                 </div>
                 <input
@@ -443,10 +480,10 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
                   className="form-input"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="sk-..."
+                  placeholder={t('form.apiKeyPlaceholder')}
                 />
                 <p className="text-[0.75rem] text-text-muted mt-1">
-                  Stored encrypted in your browser
+                  {t('form.storedEncrypted')}
                 </p>
               </div>
             </div>
@@ -454,7 +491,7 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
         </div>
 
         <button type="submit" className="btn-primary" disabled={isGenerating || cooldown > 0}>
-          {isGenerating ? 'Generating...' : cooldown > 0 ? `Wait ${cooldown}s` : showVariation ? 'Regenerate Cover Letter' : 'Generate Cover Letter'}
+          {isGenerating ? t('form.generating') : cooldown > 0 ? t('form.waitSeconds', { seconds: cooldown }) : showVariation ? t('form.regenerate') : t('form.generate')}
         </button>
       </form>
     </div>
