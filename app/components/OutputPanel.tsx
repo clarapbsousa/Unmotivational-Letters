@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Copy, Download, RefreshCw } from 'lucide-react';
 
 interface OutputPanelProps {
@@ -25,15 +26,16 @@ export default function OutputPanel({
   onDownload,
   onRegenerate,
 }: OutputPanelProps) {
+  const { t } = useTranslation();
   const hasContent = letter.length > 0;
 
   return (
     <div className="panel relative" style={{ position: 'relative' }}>
       <div className="flex items-center gap-2 mb-5 pb-4 border-b border-border">
         <div>
-          <div className="text-[0.95rem] font-medium">Your Cover Letter</div>
+          <div className="text-[0.95rem] font-medium">{t('output.title')}</div>
           <div className="text-[0.8rem] text-text-muted mt-0.5">
-            {hasContent ? 'Generated just for you' : 'Fill in details and generate'}
+            {hasContent ? t('output.generated') : t('output.placeholderTitle')}
           </div>
         </div>
       </div>
@@ -42,7 +44,7 @@ export default function OutputPanel({
       {isGenerating && (
         <div className="absolute inset-0 bg-[rgba(10,10,10,0.95)] rounded-[10px] flex flex-col items-center justify-center gap-5 z-10">
           <div className="w-8 h-8 border-2 border-border border-t-text rounded-full animate-spin-slow" />
-          <div className="text-[0.85rem] text-text-muted">Crafting your letter...</div>
+          <div className="text-[0.85rem] text-text-muted">{t('output.crafting')}</div>
           <LoadingSteps />
         </div>
       )}
@@ -50,9 +52,9 @@ export default function OutputPanel({
       {/* Placeholder */}
       {!hasContent && !isGenerating && (
         <div className="flex flex-col items-center justify-center min-h-[320px] text-center text-text-muted">
-          <h3 className="text-[0.95rem] mb-1 text-text font-medium">Your letter will appear here</h3>
+          <h3 className="text-[0.95rem] mb-1 text-text font-medium">{t('output.placeholderTitle')}</h3>
           <p className="text-[0.85rem] max-w-[260px]">
-            Fill in your details and click generate to get started.
+            {t('output.placeholderText')}
           </p>
         </div>
       )}
@@ -66,16 +68,16 @@ export default function OutputPanel({
           <div className="flex gap-2">
             <button onClick={onCopy} className="btn-secondary flex-1">
               <Copy size={16} />
-              Copy
+              {t('output.copy')}
             </button>
             <button onClick={onDownload} className="btn-secondary flex-1">
               <Download size={16} />
-              Download PDF
+              {t('output.downloadPDF')}
             </button>
           </div>
           <button onClick={onRegenerate} className="btn-primary">
             <RefreshCw size={16} />
-            Regenerate
+            {t('output.regenerate')}
           </button>
         </div>
       )}
@@ -84,11 +86,12 @@ export default function OutputPanel({
 }
 
 function LoadingSteps() {
+  const { t } = useTranslation();
   const steps = [
-    'Analysing job description',
-    'Matching your experience',
-    'Writing personalised letter',
-    'Polishing & formatting',
+    t('output.step1'),
+    t('output.step2'),
+    t('output.step3'),
+    t('output.step4'),
   ];
 
   return (
