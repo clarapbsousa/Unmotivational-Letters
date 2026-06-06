@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --surface-hover: #1a1a1a;
+  --text: #ffffff;
+  --text-muted: #888888;
+  --border: #222222;
+  --accent: #ffffff;
+  --error: #ff4444;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  .panel {
+    @apply bg-surface border border-border rounded-[10px] p-7;
+  }
+
+  .form-input {
+    @apply w-full px-3 py-3 bg-bg border border-border rounded-md text-text font-inter text-sm transition-colors duration-200 focus:outline-none focus:border-text-muted placeholder:text-[#555] resize-y;
+  }
+
+  .btn-primary {
+    @apply w-full py-3 px-5 rounded-md font-medium text-sm cursor-pointer transition-all duration-200 bg-accent text-bg hover:opacity-85 disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2;
+  }
+
+  .btn-secondary {
+    @apply py-3 px-5 rounded-md font-medium text-sm cursor-pointer transition-all duration-200 bg-transparent text-text border border-border hover:border-text-muted inline-flex items-center justify-center gap-2;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin 0.8s linear infinite;
+}
