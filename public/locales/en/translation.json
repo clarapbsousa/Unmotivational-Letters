@@ -59,6 +59,7 @@
   "output": {
     "title": "Your Cover Letter",
     "generated": "Generated just for you",
+    "edited": "Edited",
     "placeholderTitle": "Your letter will appear here",
     "placeholderText": "Fill in your details and click generate to get started.",
     "crafting": "Crafting your letter...",
@@ -66,6 +67,7 @@
     "step2": "Matching your experience",
     "step3": "Writing personalised letter",
     "step4": "Polishing & formatting",
+    "editHint": "You can edit the text directly before exporting",
     "copy": "Copy",
     "downloadPDF": "Download PDF",
     "regenerate": "Regenerate"

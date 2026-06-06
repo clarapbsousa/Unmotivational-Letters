@@ -25,8 +25,6 @@ interface GenerationData {
   style: string;
   tone: string;
   model: string;
-  apiKey: string;
-  baseUrl: string;
   letterLanguage: string;
   variationInstructions?: string;
 }
@@ -34,6 +32,7 @@ interface GenerationData {
 export default function Home() {
   const { t } = useTranslation();
   const [letter, setLetter] = useState('');
+  const [editedLetter, setEditedLetter] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [companyName, setCompanyName] = useState('');
   const [personalInfo, setPersonalInfo] = useState({
@@ -100,7 +99,7 @@ export default function Home() {
         data.variationInstructions ? previousLetter || letter : undefined
       );
 
-      const generated = await generateLetterViaProxy(data.baseUrl, data.apiKey, data.model, [
+      const generated = await generateLetterViaProxy(data.model, [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
       ]);
@@ -110,6 +109,7 @@ export default function Home() {
       }
 
       setLetter(generated);
+      setEditedLetter(generated);
       setShowVariation(true);
       showToast(t('toast.generated'));
     } catch (error) {
@@ -125,21 +125,25 @@ export default function Home() {
     }
   }, [letter, previousLetter, showToast, cooldown, startCooldown, t]);
 
+  const handleLetterChange = useCallback((text: string) => {
+    setEditedLetter(text);
+  }, []);
+
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(letter).then(() => {
+    navigator.clipboard.writeText(editedLetter).then(() => {
       showToast(t('toast.copied'));
     });
-  }, [letter, showToast, t]);
+  }, [editedLetter, showToast, t]);
 
   const handleDownload = useCallback(async () => {
     try {
-      await generatePDF(letter, companyName, personalInfo);
+      await generatePDF(editedLetter, companyName, personalInfo);
       showToast(t('toast.pdfDownloaded'));
     } catch (error) {
       console.error('PDF generation error:', error);
       showToast(t('toast.pdfFailed'), 'err');
     }
-  }, [letter, companyName, personalInfo, showToast, t]);
+  }, [editedLetter, companyName, personalInfo, showToast, t]);
 
   const handleRegenerate = useCallback(() => {
     setShowVariation(true);
@@ -149,6 +153,8 @@ export default function Home() {
       variationField.focus();
     }
   }, []);
+
+  const isEdited = letter.length > 0 && editedLetter !== letter;
 
   return (
     <main className={styles.main}>
@@ -167,13 +173,16 @@ export default function Home() {
           cooldown={cooldown}
         />
         <OutputPanel
-          letter={letter}
+          letter={editedLetter}
+          originalLetter={letter}
           isGenerating={isGenerating}
           companyName={companyName}
           personalInfo={personalInfo}
+          isEdited={isEdited}
           onCopy={handleCopy}
           onDownload={handleDownload}
           onRegenerate={handleRegenerate}
+          onChange={handleLetterChange}
         />
       </div>
 

@@ -59,6 +59,7 @@
   "output": {
     "title": "Din ansøgning",
     "generated": "Genereret specielt til dig",
+    "edited": "Redigeret",
     "placeholderTitle": "Din ansøgning vises her",
     "placeholderText": "Udfyld dine oplysninger og klik på generer for at komme i gang.",
     "crafting": "Skriver din ansøgning...",
@@ -66,6 +67,7 @@
     "step2": "Matcher din erfaring",
     "step3": "Skriver personlig ansøgning",
     "step4": "Redigerer og formatterer",
+    "editHint": "Du kan redigere teksten direkte før eksport",
     "copy": "Kopier",
     "downloadPDF": "Download PDF",
     "regenerate": "Regenerer"

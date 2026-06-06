@@ -59,6 +59,7 @@
   "output": {
     "title": "Ihr Anschreiben",
     "generated": "Speziell für Sie generiert",
+    "edited": "Bearbeitet",
     "placeholderTitle": "Ihr Anschreiben erscheint hier",
     "placeholderText": "Füllen Sie Ihre Daten aus und klicken Sie auf Generieren, um zu beginnen.",
     "crafting": "Ihr Anschreiben wird erstellt...",
@@ -66,6 +67,7 @@
     "step2": "Ihre Erfahrung wird abgeglichen",
     "step3": "Persönliches Anschreiben wird verfasst",
     "step4": "Wird überarbeitet und formatiert",
+    "editHint": "Sie können den Text vor dem Export direkt bearbeiten",
     "copy": "Kopieren",
     "downloadPDF": "PDF herunterladen",
     "regenerate": "Regenerieren"

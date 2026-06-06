@@ -59,6 +59,7 @@
   "output": {
     "title": "La Tua Lettera di Presentazione",
     "generated": "Generata appositamente per te",
+    "edited": "Modificata",
     "placeholderTitle": "La tua lettera apparirà qui",
     "placeholderText": "Compila i tuoi dati e clicca su genera per iniziare.",
     "crafting": "Sto creando la tua lettera...",
@@ -66,6 +67,7 @@
     "step2": "Confronto con la tua esperienza",
     "step3": "Scrittura della lettera personalizzata",
     "step4": "Revisione e formattazione",
+    "editHint": "Puoi modificare il testo direttamente prima di esportare",
     "copy": "Copia",
     "downloadPDF": "Scarica PDF",
     "regenerate": "Rigenera"

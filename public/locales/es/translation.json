@@ -59,6 +59,7 @@
   "output": {
     "title": "Tu Carta de Motivación",
     "generated": "Generada especialmente para ti",
+    "edited": "Editada",
     "placeholderTitle": "Tu carta aparecerá aquí",
     "placeholderText": "Rellena tus datos y haz clic en generar para empezar.",
     "crafting": "Creando tu carta...",
@@ -66,6 +67,7 @@
     "step2": "Comparando con tu experiencia",
     "step3": "Escribiendo carta personalizada",
     "step4": "Revisando y formateando",
+    "editHint": "Puedes editar el texto directamente antes de exportar",
     "copy": "Copiar",
     "downloadPDF": "Descargar PDF",
     "regenerate": "Regenerar"
