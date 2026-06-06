@@ -389,7 +389,7 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
             </button>
 
             <div className="relative group">
-              <Info size={14} className="text-text-muted hover:text-text cursor-help transition-colors" />
+              <Info size={14} className="text-text-muted hover:text-text transition-colors" />
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-[260px] p-3 bg-surface border border-border rounded-md text-[0.75rem] text-text-muted leading-relaxed opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 shadow-lg">
                 <p className="font-medium text-text mb-1">Where to get your credentials</p>
                 <p className="mb-2">
