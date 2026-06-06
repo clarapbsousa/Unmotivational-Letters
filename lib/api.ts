@@ -1,6 +1,4 @@
 export const generateLetterViaProxy = async (
-  baseUrl: string,
-  apiKey: string,
   model: string,
   messages: { role: string; content: string }[]
 ): Promise<string> => {
@@ -10,8 +8,6 @@ export const generateLetterViaProxy = async (
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      baseUrl,
-      apiKey,
       model,
       messages,
     }),

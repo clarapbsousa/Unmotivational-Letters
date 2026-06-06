@@ -40,17 +40,17 @@ async function callOpenAI(baseUrl: string, apiKey: string, model: string, messag
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    let { baseUrl, apiKey, model, messages } = body;
+    const { model, messages } = body;
 
-    if (!baseUrl || !apiKey) {
+    const baseUrl = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
+    const apiKey = process.env.OPENAI_API_KEY;
+
+    if (!apiKey) {
       return NextResponse.json(
-        { error: 'Missing API key or base URL. Please check your API Settings.' },
-        { status: 400 }
+        { error: 'Server API key not configured. Please check environment variables.' },
+        { status: 500 }
       );
     }
-
-    baseUrl = String(baseUrl).trim();
-    apiKey = String(apiKey).trim();
 
     // Retry logic with exponential backoff for rate limits
     let lastError: any = null;

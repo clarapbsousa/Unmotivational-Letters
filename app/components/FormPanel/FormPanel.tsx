@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Upload, X, ChevronDown, ChevronUp, Lock, Eye, EyeOff, Info } from 'lucide-react';
+import { Upload, X, Eye, EyeOff } from 'lucide-react';
 import { extractTextFromFile } from '@/lib/extract';
 import { saveToStorage, loadFromStorage, clearStorage } from '@/lib/crypto';
 import styles from './FormPanel.module.css';
@@ -22,8 +22,6 @@ interface FormPanelProps {
     style: string;
     tone: string;
     model: string;
-    apiKey: string;
-    baseUrl: string;
     letterLanguage: string;
     variationInstructions?: string;
   }) => void;
@@ -32,11 +30,9 @@ interface FormPanelProps {
   cooldown: number;
 }
 
-const HARD_CODED_MODEL = 'gpt-4o-mini';
+const HARD_CODED_MODEL = process.env.NEXT_PUBLIC_OPENAI_MODEL || 'gpt-4o-mini';
 
 const STORAGE_KEYS = {
-  API_KEY: 'ul_api_key',
-  BASE_URL: 'ul_base_url',
   CV_TEXT: 'ul_cv_text',
   PERSONAL_INFO: 'ul_personal_info',
 };
@@ -65,9 +61,6 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
   const [style, setStyle] = useState('balanced');
   const [tone, setTone] = useState('confident');
   const [letterLanguage, setLetterLanguage] = useState(i18n.language);
-  const [apiKey, setApiKey] = useState('');
-  const [baseUrl, setBaseUrl] = useState('https://api.openai.com/v1');
-  const [showApiSettings, setShowApiSettings] = useState(false);
   const [fileName, setFileName] = useState('');
   const [variationInstructions, setVariationInstructions] = useState('');
   const [dropActive, setDropActive] = useState(false);
@@ -82,13 +75,9 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
 
   // Load saved data
   useEffect(() => {
-    const savedApiKey = loadFromStorage(STORAGE_KEYS.API_KEY);
-    const savedBaseUrl = loadFromStorage(STORAGE_KEYS.BASE_URL);
     const savedCv = loadFromStorage(STORAGE_KEYS.CV_TEXT);
     const savedPersonal = loadFromStorage(STORAGE_KEYS.PERSONAL_INFO);
 
-    if (savedApiKey) setApiKey(savedApiKey);
-    if (savedBaseUrl) setBaseUrl(savedBaseUrl);
     if (savedCv) {
       setCvText(savedCv);
       setFileName(t('form.uploadHint'));
@@ -104,11 +93,9 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
 
   // Save data when changed
   useEffect(() => {
-    if (apiKey) saveToStorage(STORAGE_KEYS.API_KEY, apiKey);
-    if (baseUrl) saveToStorage(STORAGE_KEYS.BASE_URL, baseUrl);
     if (cvText) saveToStorage(STORAGE_KEYS.CV_TEXT, cvText);
     saveToStorage(STORAGE_KEYS.PERSONAL_INFO, JSON.stringify(personalInfo));
-  }, [apiKey, baseUrl, cvText, personalInfo]);
+  }, [cvText, personalInfo]);
 
   // Scroll to variation when shown
   useEffect(() => {
@@ -168,8 +155,6 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
       style,
       tone,
       model: HARD_CODED_MODEL,
-      apiKey,
-      baseUrl,
       letterLanguage,
       variationInstructions: showVariation ? variationInstructions : undefined,
     });
@@ -412,84 +397,6 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
             />
           </div>
         )}
-
-        {/* API Settings Toggle */}
-        <div className={styles.section}>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowApiSettings(!showApiSettings)}
-              className={styles.apiToggle}
-            >
-              <Lock size={14} />
-              {t('form.apiSettings')}
-              {showApiSettings ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-            </button>
-
-            <div className={styles.tooltipContainer}>
-              <Info size={14} className="text-text-muted hover:text-text transition-colors cursor-help" />
-              <div className={styles.tooltip}>
-                <p className={styles.tooltipTitle}>{t('form.tooltipTitle')}</p>
-                <p className="mb-2">
-                  <span className="text-text">{t('form.tooltipBaseUrl')}:</span> {t('form.tooltipProviderEndpoint')}
-                </p>
-                <ul className={styles.tooltipList}>
-                  <li>OpenAI: <span className="font-mono text-[0.7rem]">https://api.openai.com/v1</span></li>
-                  <li>OpenRouter: <span className="font-mono text-[0.7rem]">https://openrouter.ai/api/v1</span></li>
-                </ul>
-                <p>
-                  <span className="text-text">{t('form.tooltipApiKey')}:</span> {t('form.tooltipCreateKey')}
-                </p>
-                <ul className={styles.tooltipList}>
-                  <li>OpenAI: <span className="font-mono text-[0.7rem]">platform.openai.com/api-keys</span></li>
-                  <li>OpenRouter: <span className="font-mono text-[0.7rem]">openrouter.ai/keys</span></li>
-                </ul>
-                <div className={styles.tooltipArrow} />
-              </div>
-            </div>
-          </div>
-          {showApiSettings && (
-            <div className={styles.apiPanel}>
-              <div>
-                <label className={styles.apiLabel}>{t('form.baseUrl')}</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={baseUrl}
-                  onChange={(e) => setBaseUrl(e.target.value)}
-                  placeholder={t('form.baseUrlPlaceholder')}
-                />
-              </div>
-              <div>
-                <div className={styles.apiLabelRow}>
-                  <label className={styles.apiLabel}>{t('form.apiKey')}</label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setApiKey('');
-                      setBaseUrl('https://api.openai.com/v1');
-                      clearStorage(STORAGE_KEYS.API_KEY);
-                      clearStorage(STORAGE_KEYS.BASE_URL);
-                    }}
-                    className={styles.clearBtn}
-                  >
-                    {t('form.clearCredentials')}
-                  </button>
-                </div>
-                <input
-                  type="password"
-                  className="form-input"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder={t('form.apiKeyPlaceholder')}
-                />
-                <p className={styles.hint}>
-                  {t('form.storedEncrypted')}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
 
         <button type="submit" className="btn-primary" disabled={isGenerating || cooldown > 0}>
           {isGenerating ? t('form.generating') : cooldown > 0 ? t('form.waitSeconds', { seconds: cooldown }) : showVariation ? t('form.regenerate') : t('form.generate')}
