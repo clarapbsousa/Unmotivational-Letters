@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Upload, X, ChevronDown, ChevronUp, Lock, Eye, EyeOff, Info } from 'lucide-react';
 import { extractTextFromFile } from '@/lib/extract';
 import { saveToStorage, loadFromStorage, clearStorage } from '@/lib/crypto';
+import styles from './FormPanel.module.css';
 
 interface FormPanelProps {
   onGenerate: (data: {
@@ -174,22 +175,22 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
     });
   };
 
-  const requiredStar = <span className="text-error ml-0.5">{t('form.required')}</span>;
+  const requiredStar = <span className={styles.requiredStar}>{t('form.required')}</span>;
 
   return (
     <div className="panel">
-      <div className="flex items-center gap-2 mb-5 pb-4 border-b border-border">
+      <div className={styles.header}>
         <div>
-          <div className="text-[0.95rem] font-medium">{t('form.yourInformation')}</div>
-          <div className="text-[0.8rem] text-text-muted mt-0.5">{t('form.fillDetails')}</div>
+          <div className={styles.title}>{t('form.yourInformation')}</div>
+          <div className={styles.subtitle}>{t('form.fillDetails')}</div>
         </div>
       </div>
 
       <form onSubmit={handleSubmit}>
         {/* Personal Details */}
-        <div className="mb-5">
-          <label className="block text-[0.85rem] font-medium mb-2">{t('form.personalDetails')}</label>
-          <div className="grid grid-cols-2 gap-3">
+        <div className={styles.section}>
+          <label className={styles.label}>{t('form.personalDetails')}</label>
+          <div className={styles.grid2}>
             <input
               type="text"
               placeholder={t('form.fullName')}
@@ -222,8 +223,8 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
         </div>
 
         {/* Company Name */}
-        <div className="mb-5">
-          <label className="block text-[0.85rem] font-medium mb-2">
+        <div className={styles.section}>
+          <label className={styles.label}>
             {t('form.companyName')} {requiredStar}
           </label>
           <input
@@ -233,12 +234,12 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
           />
-          <p className="text-[0.75rem] text-text-muted mt-2">{t('form.companyFilename')}</p>
+          <p className={styles.hint}>{t('form.companyFilename')}</p>
         </div>
 
         {/* Job Description */}
-        <div className="mb-5">
-          <label className="block text-[0.85rem] font-medium mb-2">
+        <div className={styles.section}>
+          <label className={styles.label}>
             {t('form.jobDescription')} {requiredStar}
           </label>
           <textarea
@@ -247,41 +248,41 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
           />
-          <div className="text-right text-[0.7rem] text-text-muted mt-1">
+          <div className={styles.charCount}>
             {t('form.chars', { count: jobDescription.length })}
           </div>
         </div>
 
         {/* CV Upload */}
-        <div className="mb-5">
-          <label className="block text-[0.85rem] font-medium mb-2">
+        <div className={styles.section}>
+          <label className={styles.label}>
             {t('form.cvUpload')} {requiredStar}
           </label>
           <div
-            className={`border border-dashed border-border rounded-md p-6 text-center cursor-pointer transition-colors duration-200 bg-bg hover:border-text-muted ${dropActive ? 'border-text bg-surface-hover' : ''}`}
+            className={dropActive ? styles.dropzoneActive : styles.dropzone}
             onClick={() => fileInputRef.current?.click()}
             onDragOver={(e) => { e.preventDefault(); setDropActive(true); }}
             onDragLeave={() => setDropActive(false)}
             onDrop={handleDrop}
           >
             {fileName ? (
-              <div className="flex items-center justify-center gap-2">
+              <div className={styles.fileDisplay}>
                 <span className="text-sm"><strong>{fileName}</strong></span>
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); clearCV(); }}
-                  className="text-text-muted hover:text-error"
+                  className={styles.removeFile}
                 >
                   <X size={16} />
                 </button>
               </div>
             ) : (
               <>
-                <div className="text-[0.85rem] text-text-muted flex items-center justify-center gap-2">
+                <div className={styles.uploadHint}>
                   <Upload size={16} />
                   {t('form.uploadHint')}
                 </div>
-                <div className="text-[0.75rem] text-[#555] mt-1">{t('form.uploadFormats')}</div>
+                <div className={styles.uploadFormats}>{t('form.uploadFormats')}</div>
               </>
             )}
             <input
@@ -292,14 +293,14 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
               onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
             />
           </div>
-          <div className="text-center text-[0.75rem] text-text-muted my-2">{t('form.orPaste')}</div>
+          <div className={styles.divider}>{t('form.orPaste')}</div>
           <textarea
             className="form-input min-h-[140px] leading-relaxed"
             placeholder={t('form.cvPlaceholder')}
             value={cvText}
             onChange={(e) => setCvText(e.target.value)}
           />
-          <div className="text-right text-[0.7rem] text-text-muted mt-1">
+          <div className={styles.charCount}>
             {t('form.chars', { count: cvText.length })}
           </div>
 
@@ -309,13 +310,13 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
               <button
                 type="button"
                 onClick={() => setShowCvPreview((v) => !v)}
-                className="flex items-center gap-2 text-[0.8rem] text-text-muted hover:text-text transition-colors mb-2"
+                className={styles.togglePreview}
               >
                 {showCvPreview ? <EyeOff size={14} /> : <Eye size={14} />}
                 {showCvPreview ? t('form.hidePreview') : t('form.showPreview')}
               </button>
               {showCvPreview && (
-                <div className="bg-bg border border-border rounded-md p-4 text-[0.8rem] text-text-muted leading-relaxed whitespace-pre-wrap max-h-[240px] overflow-y-auto scrollbar-thin">
+                <div className={`${styles.cvPreview} scrollbar-thin`}>
                   {cvText}
                 </div>
               )}
@@ -324,8 +325,8 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
         </div>
 
         {/* Additional Context */}
-        <div className="mb-5">
-          <label className="block text-[0.85rem] font-medium mb-2">
+        <div className={styles.section}>
+          <label className={styles.label}>
             {t('form.additionalContext')} <span className="font-normal text-text-muted">({t('form.optional')})</span>
           </label>
           <textarea
@@ -334,15 +335,15 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
             value={additionalContext}
             onChange={(e) => setAdditionalContext(e.target.value)}
           />
-          <div className="text-right text-[0.7rem] text-text-muted mt-1">
+          <div className={styles.charCount}>
             {t('form.chars', { count: additionalContext.length })}
           </div>
         </div>
 
         {/* Style */}
-        <div className="mb-5">
-          <label className="block text-[0.85rem] font-medium mb-2">{t('form.writingStyle')}</label>
-          <div className="grid grid-cols-3 gap-2">
+        <div className={styles.section}>
+          <label className={styles.label}>{t('form.writingStyle')}</label>
+          <div className={styles.grid3}>
             {['formal', 'balanced', 'creative'].map((s) => (
               <div key={s} className="relative">
                 <input
@@ -352,11 +353,11 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
                   value={s}
                   checked={style === s}
                   onChange={() => setStyle(s)}
-                  className="absolute opacity-0"
+                  className={styles.radioInput}
                 />
                 <label
                   htmlFor={`style-${s}`}
-                  className={`block py-2 px-3 bg-bg border border-border rounded-md text-center text-[0.8rem] cursor-pointer transition-all duration-200 ${style === s ? 'border-text text-text bg-surface-hover' : 'text-text-muted'}`}
+                  className={style === s ? styles.radioLabelActive : styles.radioLabel}
                 >
                   {t(`form.style_${s}`)}
                 </label>
@@ -366,8 +367,8 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
         </div>
 
         {/* Tone */}
-        <div className="mb-5">
-          <label className="block text-[0.85rem] font-medium mb-2">{t('form.tone')}</label>
+        <div className={styles.section}>
+          <label className={styles.label}>{t('form.tone')}</label>
           <select
             className="form-input"
             value={tone}
@@ -381,8 +382,8 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
         </div>
 
         {/* Letter Language */}
-        <div className="mb-5">
-          <label className="block text-[0.85rem] font-medium mb-2">{t('form.letterLanguage')}</label>
+        <div className={styles.section}>
+          <label className={styles.label}>{t('form.letterLanguage')}</label>
           <select
             className="form-input"
             value={letterLanguage}
@@ -398,8 +399,8 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
 
         {/* Variation Instructions */}
         {showVariation && (
-          <div className="mb-5" ref={variationRef}>
-            <label className="block text-[0.85rem] font-medium mb-2">
+          <div className={styles.section} ref={variationRef}>
+            <label className={styles.label}>
               {t('form.variationInstructions')}
             </label>
             <textarea
@@ -413,44 +414,44 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
         )}
 
         {/* API Settings Toggle */}
-        <div className="mb-5">
+        <div className={styles.section}>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setShowApiSettings(!showApiSettings)}
-              className="flex items-center gap-2 text-[0.85rem] text-text-muted hover:text-text transition-colors"
+              className={styles.apiToggle}
             >
               <Lock size={14} />
               {t('form.apiSettings')}
               {showApiSettings ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             </button>
 
-            <div className="relative group">
+            <div className={styles.tooltipContainer}>
               <Info size={14} className="text-text-muted hover:text-text transition-colors cursor-help" />
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-[260px] p-3 bg-surface border border-border rounded-md text-[0.75rem] text-text-muted leading-relaxed opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 shadow-lg">
-                <p className="font-medium text-text mb-1">{t('form.tooltipTitle')}</p>
+              <div className={styles.tooltip}>
+                <p className={styles.tooltipTitle}>{t('form.tooltipTitle')}</p>
                 <p className="mb-2">
                   <span className="text-text">{t('form.tooltipBaseUrl')}:</span> {t('form.tooltipProviderEndpoint')}
                 </p>
-                <ul className="list-disc pl-4 mb-2 space-y-0.5">
+                <ul className={styles.tooltipList}>
                   <li>OpenAI: <span className="font-mono text-[0.7rem]">https://api.openai.com/v1</span></li>
                   <li>OpenRouter: <span className="font-mono text-[0.7rem]">https://openrouter.ai/api/v1</span></li>
                 </ul>
                 <p>
                   <span className="text-text">{t('form.tooltipApiKey')}:</span> {t('form.tooltipCreateKey')}
                 </p>
-                <ul className="list-disc pl-4 space-y-0.5">
+                <ul className={styles.tooltipList}>
                   <li>OpenAI: <span className="font-mono text-[0.7rem]">platform.openai.com/api-keys</span></li>
                   <li>OpenRouter: <span className="font-mono text-[0.7rem]">openrouter.ai/keys</span></li>
                 </ul>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-surface border-r border-b border-border rotate-45 -mt-1" />
+                <div className={styles.tooltipArrow} />
               </div>
             </div>
           </div>
           {showApiSettings && (
-            <div className="mt-3 space-y-3">
+            <div className={styles.apiPanel}>
               <div>
-                <label className="block text-[0.8rem] font-medium mb-1.5">{t('form.baseUrl')}</label>
+                <label className={styles.apiLabel}>{t('form.baseUrl')}</label>
                 <input
                   type="text"
                   className="form-input"
@@ -460,8 +461,8 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
                 />
               </div>
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-[0.8rem] font-medium">{t('form.apiKey')}</label>
+                <div className={styles.apiLabelRow}>
+                  <label className={styles.apiLabel}>{t('form.apiKey')}</label>
                   <button
                     type="button"
                     onClick={() => {
@@ -470,7 +471,7 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
                       clearStorage(STORAGE_KEYS.API_KEY);
                       clearStorage(STORAGE_KEYS.BASE_URL);
                     }}
-                    className="text-[0.7rem] text-text-muted hover:text-error transition-colors"
+                    className={styles.clearBtn}
                   >
                     {t('form.clearCredentials')}
                   </button>
@@ -482,7 +483,7 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
                   onChange={(e) => setApiKey(e.target.value)}
                   placeholder={t('form.apiKeyPlaceholder')}
                 />
-                <p className="text-[0.75rem] text-text-muted mt-1">
+                <p className={styles.hint}>
                   {t('form.storedEncrypted')}
                 </p>
               </div>

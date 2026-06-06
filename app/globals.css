@@ -25,7 +25,10 @@ body {
 
 @layer components {
   .panel {
-    @apply bg-surface border border-border rounded-[10px] p-7;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.75rem;
   }
 
   .form-input {

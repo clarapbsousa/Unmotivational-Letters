@@ -1,0 +1,76 @@
+.container {
+  position: relative;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.toggle:hover {
+  color: var(--text);
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.5rem;
+  width: 160px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  overflow: hidden;
+}
+
+.dropdownInner {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.item {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.item:hover {
+  color: var(--text);
+  background-color: var(--surface-hover);
+}
+
+.itemActive {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  color: var(--text);
+  background-color: var(--surface-hover);
+  border: none;
+  cursor: pointer;
+}

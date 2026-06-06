@@ -1,0 +1,82 @@
+.main {
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background-color: var(--bg);
+  z-index: 100;
+}
+
+.navBrand {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.025em;
+}
+
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  min-height: calc(100vh - 70px);
+}
+
+@media (min-width: 768px) {
+  .container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--surface);
+  border: 1px solid;
+  border-radius: 0.375rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  max-width: 400px;
+}
+
+.toastOk {
+  border-color: var(--text);
+  color: var(--text);
+}
+
+.toastErr {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.toastVisible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toastHidden {
+  transform: translateY(5rem);
+  opacity: 0;
+}
+
+.toastMessage {
+  word-break: break-word;
+  line-height: 1.625;
+}

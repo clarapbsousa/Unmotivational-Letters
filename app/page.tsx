@@ -3,12 +3,13 @@
 import '@/app/i18n/config';
 import React, { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import FormPanel from './components/FormPanel';
-import OutputPanel from './components/OutputPanel';
-import LanguageSwitcher from './components/LanguageSwitcher';
+import FormPanel from './components/FormPanel/FormPanel';
+import OutputPanel from './components/OutputPanel/OutputPanel';
+import LanguageSwitcher from './components/LanguageSwitcher/LanguageSwitcher';
 import { generatePDF } from '@/lib/pdf';
 import { generateLetterViaProxy } from '@/lib/api';
 import { buildSystemPrompt, buildUserPrompt } from '@/lib/prompt';
+import styles from './page.module.css';
 
 interface GenerationData {
   personalInfo: {
@@ -150,15 +151,15 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-bg text-text font-inter">
-      <nav className="flex justify-between items-center px-[6%] py-5 border-b border-border sticky top-0 bg-bg z-[100]">
-        <a href="/" className="font-semibold text-[1.1rem] text-text no-underline tracking-tight">
+    <main className={styles.main}>
+      <nav className={styles.nav}>
+        <a href="/" className={styles.navBrand}>
           {t('nav.title')}
         </a>
         <LanguageSwitcher />
       </nav>
 
-      <div className="max-w-[1200px] mx-auto px-[6%] py-8 grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[calc(100vh-70px)]">
+      <div className={styles.container}>
         <FormPanel
           onGenerate={handleGenerate}
           isGenerating={isGenerating}
@@ -178,11 +179,9 @@ export default function Home() {
 
       {/* Toast */}
       <div
-        className={`fixed bottom-6 right-6 px-5 py-3 bg-surface border rounded-md text-[0.85rem] font-medium z-[1000] transition-all duration-300 max-w-[400px] ${
-          toast.show ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
-        } ${toast.type === 'ok' ? 'border-text text-text' : 'border-error text-error'}`}
+        className={`${styles.toast} ${toast.type === 'ok' ? styles.toastOk : styles.toastErr} ${toast.show ? styles.toastVisible : styles.toastHidden}`}
       >
-        <div className="break-words leading-relaxed">{toast.message}</div>
+        <div className={styles.toastMessage}>{toast.message}</div>
       </div>
     </main>
   );
