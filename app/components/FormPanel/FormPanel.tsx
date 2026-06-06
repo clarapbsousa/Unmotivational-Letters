@@ -21,7 +21,6 @@ interface FormPanelProps {
     additionalContext: string;
     style: string;
     tone: string;
-    model: string;
     letterLanguage: string;
     variationInstructions?: string;
   }) => void;
@@ -29,8 +28,6 @@ interface FormPanelProps {
   showVariation: boolean;
   cooldown: number;
 }
-
-const HARD_CODED_MODEL = process.env.NEXT_PUBLIC_OPENAI_MODEL || 'gpt-4o-mini';
 
 const STORAGE_KEYS = {
   CV_TEXT: 'ul_cv_text',
@@ -154,7 +151,6 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
       additionalContext,
       style,
       tone,
-      model: HARD_CODED_MODEL,
       letterLanguage,
       variationInstructions: showVariation ? variationInstructions : undefined,
     });

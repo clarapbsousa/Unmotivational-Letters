@@ -1,5 +1,4 @@
 export const generateLetterViaProxy = async (
-  model: string,
   messages: { role: string; content: string }[]
 ): Promise<string> => {
   const response = await fetch('/api/generate', {
@@ -8,7 +7,6 @@ export const generateLetterViaProxy = async (
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model,
       messages,
     }),
   });

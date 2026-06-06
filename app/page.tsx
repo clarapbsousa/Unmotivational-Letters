@@ -24,7 +24,6 @@ interface GenerationData {
   additionalContext: string;
   style: string;
   tone: string;
-  model: string;
   letterLanguage: string;
   variationInstructions?: string;
 }
@@ -99,7 +98,7 @@ export default function Home() {
         data.variationInstructions ? previousLetter || letter : undefined
       );
 
-      const generated = await generateLetterViaProxy(data.model, [
+      const generated = await generateLetterViaProxy([
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
       ]);

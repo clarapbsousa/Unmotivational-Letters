@@ -40,10 +40,11 @@ async function callOpenAI(baseUrl: string, apiKey: string, model: string, messag
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { model, messages } = body;
+    const { messages } = body;
 
     const baseUrl = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
     const apiKey = process.env.OPENAI_API_KEY;
+    const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 
     if (!apiKey) {
       return NextResponse.json(
