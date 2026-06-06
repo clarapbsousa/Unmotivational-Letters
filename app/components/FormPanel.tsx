@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Upload, X, ChevronDown, ChevronUp, Lock, Eye, EyeOff } from 'lucide-react';
+import { Upload, X, ChevronDown, ChevronUp, Lock, Eye, EyeOff, Info } from 'lucide-react';
 import { extractTextFromFile } from '@/lib/extract';
 import { saveToStorage, loadFromStorage, clearStorage } from '@/lib/crypto';
 
@@ -377,15 +377,39 @@ export default function FormPanel({ onGenerate, isGenerating, showVariation, coo
 
         {/* API Settings Toggle */}
         <div className="mb-5">
-          <button
-            type="button"
-            onClick={() => setShowApiSettings(!showApiSettings)}
-            className="flex items-center gap-2 text-[0.85rem] text-text-muted hover:text-text transition-colors"
-          >
-            <Lock size={14} />
-            API Settings
-            {showApiSettings ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowApiSettings(!showApiSettings)}
+              className="flex items-center gap-2 text-[0.85rem] text-text-muted hover:text-text transition-colors"
+            >
+              <Lock size={14} />
+              API Settings
+              {showApiSettings ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+
+            <div className="relative group">
+              <Info size={14} className="text-text-muted hover:text-text cursor-help transition-colors" />
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-[260px] p-3 bg-surface border border-border rounded-md text-[0.75rem] text-text-muted leading-relaxed opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 shadow-lg">
+                <p className="font-medium text-text mb-1">Where to get your credentials</p>
+                <p className="mb-2">
+                  <span className="text-text">Base URL:</span> Your AI provider&apos;s API endpoint.
+                </p>
+                <ul className="list-disc pl-4 mb-2 space-y-0.5">
+                  <li>OpenAI: <span className="font-mono text-[0.7rem]">https://api.openai.com/v1</span></li>
+                  <li>OpenRouter: <span className="font-mono text-[0.7rem]">https://openrouter.ai/api/v1</span></li>
+                </ul>
+                <p>
+                  <span className="text-text">API Key:</span> Create one in your provider&apos;s dashboard.
+                </p>
+                <ul className="list-disc pl-4 space-y-0.5">
+                  <li>OpenAI: <span className="font-mono text-[0.7rem]">platform.openai.com/api-keys</span></li>
+                  <li>OpenRouter: <span className="font-mono text-[0.7rem]">openrouter.ai/keys</span></li>
+                </ul>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-surface border-r border-b border-border rotate-45 -mt-1" />
+              </div>
+            </div>
+          </div>
           {showApiSettings && (
             <div className="mt-3 space-y-3">
               <div>
