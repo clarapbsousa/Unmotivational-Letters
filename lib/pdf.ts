@@ -75,6 +75,6 @@ export const generatePDF = async (
   // Save
   const safeCompanyName = companyName.replace(/[^a-zA-Z0-9]/g, '_');
   const safePersonName = personalInfo.name.replace(/[^a-zA-Z0-9]/g, '_');
-  const filenameSuffix = safePersonName ? `${safeCompanyName}_${safePersonName}_MotivationalLetter.pdf` : `${safeCompanyName}_MotivationalLetter.pdf`;
+  const filenameSuffix = safePersonName ? `${safeCompanyName}_${safePersonName}_CoverLetter.pdf` : `${safeCompanyName}_MotivationalLetter.pdf`;
   doc.save(filenameSuffix);
 };
