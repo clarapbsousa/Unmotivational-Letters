@@ -71,9 +71,6 @@ export const generatePDF = async (
     doc.addPage();
     cursorY = margin;
   }
-  addLine('Yours sincerely,');
-  cursorY += 4;
-  addLine(personalInfo.name, true);
 
   // Save
   const safeCompanyName = companyName.replace(/[^a-zA-Z0-9]/g, '_');
